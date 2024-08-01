@@ -6,6 +6,8 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from docx import Document
 
+## pip install python-docx nltk
+
 # 确保已经下载了nltk的数据
 import nltk
 nltk.download('punkt')
