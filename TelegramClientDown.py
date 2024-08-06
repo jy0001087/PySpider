@@ -53,7 +53,12 @@ async def download_file(semaphore,message, download_path):
 
             logging.info(f"++++++++正在下载文件: {file_name} 大小: {file_size / (1024 * 1024):.2f} MB")
 
-            await message.download_media(file=save_path)
+            # 定义进度回调函数，带文件名区分
+            def progress_callback(current, total):
+                percentage = (current * 100 / total) if total else 0
+                logging.info(f"########文件 {file_name}: 下载进度 {percentage:.2f}%")
+
+            await message.download_media(file=save_path,progress_callback=progress_callback)
 
             logging.info(f"--------下载完成: {file_name}")
 
@@ -73,8 +78,7 @@ async def main():
     all_messages = messages_files + messages_videos + messages_audios
 
 # 创建Semaphore，限制同时进行的任务数为2
-    semaphore = asyncio.Semaphore(5)
-
+    semaphore = asyncio.Semaphore(10)
     # 创建任务列表
     tasks = [download_file(semaphore, message, download_path) for message in all_messages]
 
