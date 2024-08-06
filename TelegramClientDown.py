@@ -3,6 +3,7 @@ from telethon.tl.types import InputMessagesFilterDocument, InputMessagesFilterVi
 import os
 import asyncio
 import logging
+from logging.handlers import RotatingFileHandler
 from telethon.utils import get_input_location
 
 # 请在这里填写你的API ID和API Hash
@@ -21,6 +22,11 @@ if not os.path.exists(download_path):
 
 # 设置日志配置
 log_file_path = os.path.join(download_path, 'log.log')
+# 创建RotatingFileHandler，最大文件大小为50MB，最多备份3个
+handler = RotatingFileHandler(
+    log_file_path, maxBytes=50*1024*1024, backupCount=3
+)
+
 logging.basicConfig(
     filename=log_file_path,
     level=logging.INFO,
@@ -56,7 +62,7 @@ async def download_file(semaphore,message, download_path):
             # 定义进度回调函数，带文件名区分
             def progress_callback(current, total):
                 percentage = (current * 100 / total) if total else 0
-                logging.info(f"########文件 {file_name}: 下载进度 {percentage:.2f}%")
+                logging.info(f"########文件 {file_name}:----大小：{file_size / (1024 * 1024):.2f} MB 下载进度 {percentage:.2f}%")
 
             await message.download_media(file=save_path,progress_callback=progress_callback)
 
